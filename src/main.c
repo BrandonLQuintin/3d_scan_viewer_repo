@@ -1,32 +1,21 @@
 #include <GL/gl.h>
-#include <GLFW/glfw3.h>
+#include "opengl-functions.h"
+#include "window.h"
+
 
 int main(void){
-    if (!glfwInit()){
+    if (initialize_window() == 1){
         return 1;
     }
-
-    GLFWwindow *window = glfwCreateWindow(800, 600, "3D Scan Viewer", NULL, NULL);
-    if (!window){
-        glfwTerminate();
-        return 1;
-    }
-
-    glfwMakeContextCurrent(window);
 
     while (!glfwWindowShouldClose(window)){
-        glClear(GL_COLOR_BUFFER_BIT);
-        glBegin(GL_TRIANGLES);
-        glColor3f(1.0f, 0.0f, 0.0f); glVertex2f(-0.5f, -0.5f);
-        glColor3f(0.0f,1.0f, 0.0f); glVertex2f(0.5f, -0.5f);
-        glColor3f(0.0f, 0.0f, 1.0f); glVertex2f(0.0f, 0.5f);
-        glEnd();
+        renderTriangle();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    clean_window();
+
     return 0;
 }
