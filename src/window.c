@@ -4,6 +4,10 @@
 
 GLFWwindow *window;
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
 int initialize_window(){
     if (!glfwInit()){
         return 1;
@@ -36,9 +40,4 @@ int initialize_window(){
 void clean_window(){
     glfwDestroyWindow(window);
     glfwTerminate();
-}
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
 }
