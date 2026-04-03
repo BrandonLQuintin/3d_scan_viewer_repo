@@ -1,21 +1,21 @@
-#include <GL/gl.h>
+#include <glad/glad.h>
 #include "opengl-functions.h"
 #include "window.h"
 
-
-int main(void){
-    if (initialize_window() == 1){
+int main(void) {
+    if (initialize_window() != 0) {
         return 1;
     }
 
-    while (!glfwWindowShouldClose(window)){
-        renderTriangle();
+    renderer_init();
 
+    while (!glfwWindowShouldClose(window)) {
+        renderer_draw();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
+    renderer_cleanup();
     clean_window();
-
     return 0;
 }

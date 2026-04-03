@@ -1,6 +1,10 @@
-#ifndef OPENGL_FUNCTIONS
-#include <GL/gl.h>
+#ifndef OPENGL_FUNCTIONS_H
+#define OPENGL_FUNCTIONS_H
 
-void renderTriangle();
+#include <glad/glad.h>
+
+void renderer_init(void);
+void renderer_draw(void);
+void renderer_cleanup(void);
 
 #endif
