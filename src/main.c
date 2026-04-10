@@ -17,8 +17,9 @@ int main(void) {
 
     while (!glfwWindowShouldClose(window)) {
         const uint16_t *frame;
-        if (ov7670_read_frame(camera, &frame)) {
-            renderer_upload_frame(frame);
+        const uint16_t *brightest;
+        if (ov7670_read_frame(camera, &frame, &brightest)) {
+            renderer_upload_frame(frame, brightest);
         }
 
         renderer_draw();

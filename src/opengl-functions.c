@@ -126,8 +126,8 @@ void renderer_init(void) {
 
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     uint8_t black[FRAME_RGB888_SIZE];
@@ -138,8 +138,22 @@ void renderer_init(void) {
     rgb888_buffer = malloc(FRAME_RGB888_SIZE);
 }
 
-void renderer_upload_frame(const uint16_t *rgb565) {
+static void apply_brightest_overlay(uint8_t *rgb888, const uint16_t *brightest_x) {
+    for (int row = 0; row < FRAME_HEIGHT; row++) {
+        int col = brightest_x[row];
+        if (col < 0 || col >= FRAME_WIDTH) continue;
+        int index = (row * FRAME_WIDTH + col) * 3;
+        rgb888[index + 0] = 255;
+        rgb888[index + 1] = 255;
+        rgb888[index + 2] = 255;
+    }
+}
+
+void renderer_upload_frame(const uint16_t *rgb565, const uint16_t *brightest_x) {
     rgb565_to_rgb888(rgb565, rgb888_buffer, FRAME_PIXELS);
+    if (brightest_x) {
+        apply_brightest_overlay(rgb888_buffer, brightest_x);
+    }
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, FRAME_WIDTH, FRAME_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, rgb888_buffer);
     glBindTexture(GL_TEXTURE_2D, 0);
