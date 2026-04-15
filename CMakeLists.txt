@@ -12,6 +12,7 @@ add_executable(${PROJECT_NAME}
     src/window.c
     src/opengl-functions.c
     src/ov7670.c
+    src/triangulation-math.c
     src/uart.c
     third_party/glad/src/glad.c
 )
