@@ -23,16 +23,16 @@ float calculate_radial_depth(float camera_depth){
     return (d - camera_depth) / cos(alpha_rad);
 }
 
-p_pos_t calculate_xyz(float brightest_pixel_y, uint16_t step){
+p_pos_t calculate_xyz(float brightest_pixel_x, float row, uint16_t step){
     p_pos_t output;
 
-    float camera_depth = calculate_camera_depth(brightest_pixel_y);
+    float camera_depth = calculate_camera_depth(brightest_pixel_x);
     float radial_depth = calculate_radial_depth(camera_depth);
 
     float theta = calculate_theta(step);
 
     output.x = radial_depth * cos(theta);
-    output.y = (brightest_pixel_y - (OV7670_HEIGHT / 2)) * p * (camera_depth / f);
+    output.y = -(row - (OV7670_HEIGHT / 2)) * p * (camera_depth / f);
     output.z = radial_depth * sin(theta);
 
     return output;
