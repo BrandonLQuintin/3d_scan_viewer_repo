@@ -8,7 +8,7 @@
 #include "uart.h"
 #include "window.h"
 
-#define UART_DEVICE "/dev/ttyACM1"
+#define UART_DEVICE "/dev/ttyACM0"
 #define UART_BAUD B115200
 
 int main(void) {
@@ -48,7 +48,9 @@ int main(void) {
                 final_xyz_positions = temp;
             }
 
-            renderer_upload_frame(frame, brightest);
+            if (frame) {
+                renderer_upload_frame(frame, brightest);
+            }
             for (int i = 0; i < OV7670_HEIGHT; i++){
                 final_xyz_positions[xyz_ptr_ctr] = calculate_xyz(brightest[i], (float)i, 0);
                 printf("brightest[%d]: %d\n", i, brightest[i]);

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #define SYNC_SIZE    4
 #define RX_BUF_SIZE  4096
@@ -19,11 +20,14 @@ static const uint8_t sync_pattern[SYNC_SIZE] = {0xAD, 0xEE, 0xEE, 0xDE};
 struct camera {
     int file_descriptor;
     uint8_t rx_buffer[RX_BUF_SIZE];
+#if !DISABLE_FRAME_BUFFER
     uint8_t frame_buffer[OV7670_FRAME_BYTES];
+#endif
     uint8_t brightest_buffer[OV7670_BRIGHTEST_BYTES];
     uint16_t current_step;
     size_t data_offset;
     int sync_match;
+    int sync_detected;
     int state;
     int frame_ready;
 };
@@ -53,10 +57,14 @@ static void process_bytes(camera_t *camera, ssize_t byte_count) {
                     camera->sync_match++;
                     if (camera->sync_match == SYNC_SIZE) {
                         camera->sync_match = 0;
+#if DISABLE_FRAME_BUFFER
+                        camera->state = STATE_BRIGHT;
+#else
                         camera->state = STATE_DATA;
+#endif
                         camera->data_offset = 0;
-                        position++;
-                        break;
+                        camera->sync_detected = 1;
+                        return;
                     }
                 } else {
                     camera->sync_match = (camera->rx_buffer[position] == sync_pattern[0]) ? 1 : 0;
@@ -69,7 +77,9 @@ static void process_bytes(camera_t *camera, ssize_t byte_count) {
             size_t remaining = byte_count - position;
             size_t needed = OV7670_FRAME_BYTES - camera->data_offset;
             size_t to_copy = remaining < needed ? remaining : needed;
+#if !DISABLE_FRAME_BUFFER
             memcpy(camera->frame_buffer + camera->data_offset, camera->rx_buffer + position, to_copy);
+#endif
             camera->data_offset += to_copy;
             position += to_copy;
 
@@ -103,9 +113,12 @@ static void process_bytes(camera_t *camera, ssize_t byte_count) {
 
             if (camera->data_offset >= STEP_BYTES) {
                 camera->frame_ready = 1;
-                camera->state = STATE_SYNC;
-                camera->sync_match = 0;
                 camera->data_offset = 0;
+#if DISABLE_FRAME_BUFFER
+                camera->state = STATE_BRIGHT;
+#else
+                camera->state = STATE_DATA;
+#endif
             }
         }
     }
@@ -119,9 +132,22 @@ int ov7670_read_frame(camera_t *camera, const uint16_t **out_frame, const uint16
 
     process_bytes(camera, bytes_read);
 
+    if (camera->sync_detected) {
+        camera->sync_detected = 0;
+        uint8_t ack = 23;
+        uart_write(camera->file_descriptor, &ack, 1);
+        usleep(50000);
+        uint8_t flush_buf[64];
+        while (uart_read(camera->file_descriptor, flush_buf, sizeof(flush_buf)) > 0) {}
+    }
+
     if (camera->frame_ready) {
         camera->frame_ready = 0;
+#if DISABLE_FRAME_BUFFER
+        *out_frame = NULL;
+#else
         *out_frame = (const uint16_t *)camera->frame_buffer;
+#endif
         *out_brightest = (const uint16_t *)camera->brightest_buffer;
         return 1;
     }

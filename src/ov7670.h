@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <termios.h>
 
+#define DISABLE_FRAME_BUFFER 1
+
 #define OV7670_WIDTH  320
 #define OV7670_HEIGHT 240
 #define OV7670_PIXELS (OV7670_WIDTH * OV7670_HEIGHT)
