@@ -45,6 +45,10 @@ ssize_t uart_read(int file_descriptor, uint8_t *buffer, size_t length) {
     return read(file_descriptor, buffer, length);
 }
 
+ssize_t uart_write(int file_descriptor, const uint8_t *data, size_t length) {
+    return write(file_descriptor, data, length);
+}
+
 void uart_close(int file_descriptor) {
     if (file_descriptor >= 0) close(file_descriptor);
 }

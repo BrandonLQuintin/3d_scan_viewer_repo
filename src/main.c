@@ -5,9 +5,10 @@
 #include "opengl-functions.h"
 #include "ov7670.h"
 #include "triangulation-math.h"
+#include "uart.h"
 #include "window.h"
 
-#define UART_DEVICE "/dev/ttyACM0"
+#define UART_DEVICE "/dev/ttyACM1"
 #define UART_BAUD B115200
 
 int main(void) {
@@ -54,6 +55,8 @@ int main(void) {
                 printf("pixel[%d] x: %f, y: %f, z: %f\n", (int)xyz_ptr_ctr, final_xyz_positions[xyz_ptr_ctr].x, final_xyz_positions[xyz_ptr_ctr].y, final_xyz_positions[xyz_ptr_ctr].z);
                 xyz_ptr_ctr += 1;
             }
+            uint8_t ack_value = 23;
+            uart_write(ov7670_get_fd(camera), &ack_value, 1);
 
         }
 

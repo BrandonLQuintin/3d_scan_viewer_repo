@@ -37,6 +37,10 @@ camera_t *ov7670_open(const char *device, int baud) {
     return camera;
 }
 
+int ov7670_get_fd(camera_t *camera){
+    return camera->file_descriptor;
+}
+
 static void process_bytes(camera_t *camera, ssize_t byte_count) {
     size_t position = 0;
     while (position < (size_t)byte_count) {
