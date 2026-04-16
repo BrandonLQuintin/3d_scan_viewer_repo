@@ -7,18 +7,21 @@
 
 #define SYNC_SIZE    4
 #define RX_BUF_SIZE  4096
+#define STEP_BYTES sizeof(uint16_t)
 
 static const uint8_t sync_pattern[SYNC_SIZE] = {0xAD, 0xEE, 0xEE, 0xDE};
 
 #define STATE_SYNC      0
 #define STATE_DATA      1
 #define STATE_BRIGHT    2
+#define STATE_STEPS     3
 
 struct camera {
     int file_descriptor;
     uint8_t rx_buffer[RX_BUF_SIZE];
     uint8_t frame_buffer[OV7670_FRAME_BYTES];
     uint8_t brightest_buffer[OV7670_BRIGHTEST_BYTES];
+    uint16_t current_step;
     size_t data_offset;
     int sync_match;
     int state;
@@ -85,6 +88,20 @@ static void process_bytes(camera_t *camera, ssize_t byte_count) {
             position += to_copy;
 
             if (camera->data_offset >= OV7670_BRIGHTEST_BYTES) {
+                camera->state = STATE_STEPS;
+                camera->data_offset = 0;
+            }
+        }
+
+        if (camera->state == STATE_STEPS && position < (size_t)byte_count) {
+            size_t remaining = byte_count - position;
+            size_t needed = STEP_BYTES - camera->data_offset;
+            size_t to_copy = remaining < needed ? remaining : needed;
+            memcpy(((uint8_t*)&camera->current_step) + camera->data_offset, camera->rx_buffer + position, to_copy);
+            camera->data_offset += to_copy;
+            position += to_copy;
+
+            if (camera->data_offset >= STEP_BYTES) {
                 camera->frame_ready = 1;
                 camera->state = STATE_SYNC;
                 camera->sync_match = 0;
