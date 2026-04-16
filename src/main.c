@@ -52,7 +52,7 @@ int main(void) {
                 renderer_upload_frame(frame, brightest);
             }
             for (int i = 0; i < OV7670_HEIGHT; i++){
-                final_xyz_positions[xyz_ptr_ctr] = calculate_xyz(brightest[i], (float)i, 0);
+                final_xyz_positions[xyz_ptr_ctr] = calculate_xyz(brightest[i], (float)i, ov7670_get_step(camera));
                 printf("brightest[%d]: %d\n", i, brightest[i]);
                 printf("pixel[%d] x: %f, y: %f, z: %f\n", (int)xyz_ptr_ctr, final_xyz_positions[xyz_ptr_ctr].x, final_xyz_positions[xyz_ptr_ctr].y, final_xyz_positions[xyz_ptr_ctr].z);
                 xyz_ptr_ctr += 1;

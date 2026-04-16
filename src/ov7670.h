@@ -18,6 +18,7 @@ typedef struct camera camera_t;
 
 camera_t *ov7670_open(const char *device, int baud);
 int ov7670_get_fd(camera_t *camera);
+uint16_t ov7670_get_step(camera_t *camera);
 int ov7670_read_frame(camera_t *camera, const uint16_t **out_frame, const uint16_t **out_brightest);
 void ov7670_close(camera_t *camera);
 
