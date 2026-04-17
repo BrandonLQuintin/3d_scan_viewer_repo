@@ -4,7 +4,7 @@
 
 const float alpha_deg = 20.0f; // angle of the laser pointing inward (Degrees)
 const float alpha_rad = alpha_deg * (PI / 180.0); 
-const float f = 17.5f; // focal length of the camera lens in mm
+const float f = 3.6f; // focal length of the camera lens in mm
 const float p = 0.0072f; // physical size of a single pixel on the sensor in mm (Pixel Pitch). OV7670 QVGA: 0.0072 mm
 const float x_center = OV7670_WIDTH / 2; // the middle column of the camera sensor (320 / 2 for QVGA)
 
