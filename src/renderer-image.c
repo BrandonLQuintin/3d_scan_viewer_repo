@@ -1,4 +1,4 @@
-#include "opengl-functions.h"
+#include "renderer-image.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

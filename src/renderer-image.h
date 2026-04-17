@@ -1,5 +1,5 @@
-#ifndef OPENGL_FUNCTIONS_H
-#define OPENGL_FUNCTIONS_H
+#ifndef RENDERER_IMAGE_H
+#define RENDERER_IMAGE_H
 
 #include <glad/glad.h>
 #include <stdint.h>
