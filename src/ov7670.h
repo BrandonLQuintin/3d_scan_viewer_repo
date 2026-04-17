@@ -6,6 +6,7 @@
 #include <termios.h>
 
 #define DISABLE_FRAME_BUFFER 1
+#define DISABLE_2D_RENDERER 1
 
 #define OV7670_WIDTH  320
 #define OV7670_HEIGHT 240

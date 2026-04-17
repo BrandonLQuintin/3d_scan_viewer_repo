@@ -2,11 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include "opengl-functions.h"
 #include "ov7670.h"
 #include "triangulation-math.h"
 #include "uart.h"
 #include "window.h"
+#if !DISABLE_2D_RENDERER
+#include "renderer-image.h"
+#else
+#include "renderer-3d.h"
+#endif
 
 #define UART_DEVICE "/dev/ttyACM0"
 #define UART_BAUD B115200
@@ -22,7 +26,11 @@ int main(void) {
         goto cleanup;
     }
 
+#if !DISABLE_2D_RENDERER
     renderer_init();
+#else
+    renderer_3d_init();
+#endif
 
     camera = ov7670_open(UART_DEVICE, UART_BAUD);
     if (!camera){
@@ -39,7 +47,6 @@ int main(void) {
         const uint16_t *frame;
         const uint16_t *brightest;
         if (ov7670_read_frame(camera, &frame, &brightest)) {
-            // TODO: Add a hard limit of points for this allocation once I figure out what the limit is.
             p_pos_t *temp = realloc(final_xyz_positions, (OV7670_HEIGHT + xyz_ptr_ctr) * sizeof(p_pos_t));
             if (!temp) {
                 return_value = 1;
@@ -48,13 +55,14 @@ int main(void) {
                 final_xyz_positions = temp;
             }
 
+#if !DISABLE_2D_RENDERER
             if (frame) {
                 renderer_upload_frame(frame, brightest);
             }
+#endif
             for (int i = 0; i < OV7670_HEIGHT; i++){
-                final_xyz_positions[xyz_ptr_ctr] = calculate_xyz(brightest[i], (float)i, ov7670_get_step(camera));
-                printf("brightest[%d]: %d\n", i, brightest[i]);
-                printf("pixel[%d] x: %f, y: %f, z: %f\n", (int)xyz_ptr_ctr, final_xyz_positions[xyz_ptr_ctr].x, final_xyz_positions[xyz_ptr_ctr].y, final_xyz_positions[xyz_ptr_ctr].z);
+                p_pos_t pt = calculate_xyz(brightest[i], (float)i, ov7670_get_step(camera));
+                final_xyz_positions[xyz_ptr_ctr] = pt;
                 xyz_ptr_ctr += 1;
             }
             uint8_t ack_value = 23;
@@ -62,7 +70,12 @@ int main(void) {
 
         }
 
+#if !DISABLE_2D_RENDERER
         renderer_draw();
+#else
+        renderer_3d_upload_points(final_xyz_positions, xyz_ptr_ctr);
+        renderer_3d_draw();
+#endif
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -70,7 +83,11 @@ int main(void) {
 cleanup:
     free(final_xyz_positions);
     ov7670_close(camera);
+#if !DISABLE_2D_RENDERER
     renderer_cleanup();
+#else
+    renderer_3d_cleanup();
+#endif
     clean_window();
     return return_value;
 }

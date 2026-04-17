@@ -10,7 +10,8 @@ find_package(OpenGL REQUIRED)
 add_executable(${PROJECT_NAME}
     src/main.c
     src/window.c
-    src/opengl-functions.c
+    src/renderer-image.c
+    src/renderer-3d.c
     src/ov7670.c
     src/triangulation-math.c
     src/uart.c
@@ -18,5 +19,5 @@ add_executable(${PROJECT_NAME}
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE GLFW_INCLUDE_NONE)
-target_include_directories(${PROJECT_NAME} PRIVATE third_party/glad/include)
+target_include_directories(${PROJECT_NAME} PRIVATE third_party/glad/include third_party)
 target_link_libraries(${PROJECT_NAME} PRIVATE glfw OpenGL::GL m ${CMAKE_DL_LIBS})
