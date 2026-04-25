@@ -62,6 +62,8 @@ int main(void) {
 #endif
             for (int i = 0; i < OV7670_HEIGHT; i++){
                 p_pos_t pt = calculate_xyz(brightest[i], (float)i, ov7670_get_step(camera));
+                float r2 = pt.x * pt.x + pt.z * pt.z;
+                if (r2 >= RADIAL_FILTER_MM * RADIAL_FILTER_MM) continue;
                 final_xyz_positions[xyz_ptr_ctr] = pt;
                 xyz_ptr_ctr += 1;
             }

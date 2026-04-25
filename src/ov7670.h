@@ -14,6 +14,7 @@
 #define OV7670_FRAME_BYTES (OV7670_PIXELS * 2)
 #define OV7670_ROW_COUNT OV7670_HEIGHT
 #define OV7670_BRIGHTEST_BYTES (OV7670_ROW_COUNT * 2)
+#define RADIAL_FILTER_MM 75.0f
 
 typedef struct camera camera_t;
 
