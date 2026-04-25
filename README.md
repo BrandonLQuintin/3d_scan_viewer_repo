@@ -1,6 +1,7 @@
 # 3D Scan Viewer
-
 STM32で作った3DスキャナーからUART経由でレーザースキャンデータを受信し、リアルタイムでPhongシェーディング付きの3D点群（ポイントクラウド）を表示するPCアプリケーションです。
+
+https://github.com/user-attachments/assets/c427767b-212e-44a1-b47e-8a18f9bc377e
 
 ## 依存ライブラリ
 
