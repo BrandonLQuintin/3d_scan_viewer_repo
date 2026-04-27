@@ -16,7 +16,7 @@ float calculate_camera_depth(float brightest_pixel_x){
 }
 
 float calculate_theta(uint16_t step){
-    return (step / 4096.0f) * 2.0 * PI;
+    return (step / 4076.0f) * 2.0 * PI;
 }
 
 float calculate_radial_depth(float camera_depth){
